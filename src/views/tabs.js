@@ -14,16 +14,16 @@ export function practiceView({ startLesson }) {
   const now = new Date(), monday = new Date(now); monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
   const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => { const x = new Date(monday); x.setDate(monday.getDate() + i); return { d, on: S.activeDays.includes(dayKey(x)), today: dayKey(x) === dayKey() }; });
   const tile = (title, desc, label, disabled, cfg, chip) => h('div', { class: 'tile' }, h('div', { class: 'chip', 'aria-hidden': 'true' }, chip),
-    h('div', { class: 'body' }, h('h3', { text: title }), h('p', { text: desc })),
+    h('div', { class: 'body' }, h('h2', { text: title }), h('p', { text: desc })),
     h('button', { class: 'btn sm', disabled, onclick: () => startLesson(cfg) }, label));
   return h('div', null,
     h('h1', { class: 'page-h', text: 'Practice' }),
     h('p', { class: 'page-sub', text: 'Revise only what you have already learned.' }),
     h('div', { class: 'week', 'aria-label': `This week: active on ${days.filter(d => d.on).length} days. Streak ${liveStreak()} days.` },
       days.map(x => h('span', null, h('i', { class: x.on ? 'on' : null }, icon('flame')), x.d))),
-    tile('Fix your mistakes', n ? `${n} question${n > 1 ? 's' : ''} you missed. Get one right to clear it.` : 'Nothing to fix. Missed questions collect here.', 'Start', !n, { mode: 'mistakes' }, '!'),
-    tile('Mixed review', learned.length ? (() => { const k = S.done.filter(id => LEVEL_BY_ID[id] && !LEVEL_BY_ID[id].pct).length; return `10 questions from the ${k} lesson${k === 1 ? '' : 's'} you have finished.`; })() : locked, 'Start', !learned.length, { mode: 'mixed' }, '↻'),
-    tile('Numbers drill', nums ? `${nums} calculations from your lessons, each with worked steps.` : locked, 'Start', !nums, { mode: 'numbers' }, '#'),
+    tile('Fix your mistakes', n ? `${n} question${n > 1 ? 's' : ''} you missed. Get one right to clear it.` : 'Nothing to fix yet. Questions you miss will collect here.', 'Fix mistakes', !n, { mode: 'mistakes' }, '!'),
+    tile('Mixed review', learned.length ? (() => { const k = S.done.filter(id => LEVEL_BY_ID[id] && !LEVEL_BY_ID[id].pct).length; return `10 questions from the ${k} lesson${k === 1 ? '' : 's'} you have finished.`; })() : locked, 'Start review', !learned.length, { mode: 'mixed' }, '↻'),
+    tile('Numbers drill', nums ? `${nums} calculations from your lessons, each with worked steps.` : locked, 'Start drill', !nums, { mode: 'numbers' }, '#'),
     h('div', { class: 'stats3' },
       h('div', null, h('b', { text: `${S.done.filter(id => LEVEL_BY_ID[id] && !LEVEL_BY_ID[id].pct).length}/${LEVELS.length}` }), h('span', { text: 'Lessons done' })),
       h('div', null, h('b', { text: acc + '%' }), h('span', { text: 'Accuracy' })),
@@ -38,11 +38,11 @@ export function cardsView({ rerender, goLearn }) {
   const wrap = h('div', null, h('h1', { class: 'page-h', text: 'Cards' }),
     h('p', { class: 'page-sub', text: open.length ? `${open.length} of ${CARDS.length} cards unlocked, in the order you learned them. Explain each one in your own words, then flip to check.` : 'Cards unlock as you finish lessons, so they always build on what you have learned.' }));
   if (!open.length) {
-    wrap.append(h('div', { class: 'empty' }, mascot('calm', 72), h('h3', { text: 'No cards yet' }), h('p', { text: 'Finish your first station on the map to unlock your first cards.' }), h('button', { class: 'btn', onclick: goLearn }, 'Go to the map')));
+    wrap.append(h('div', { class: 'empty' }, mascot('calm', 72), h('h2', { text: 'No cards yet' }), h('p', { text: 'Finish your first lesson on the map to unlock cards. They build up as you learn.' }), h('button', { class: 'btn', onclick: goLearn }, 'Go to the map')));
     return wrap;
   }
   if (!list.length) {
-    wrap.append(h('div', { class: 'empty' }, mascot('wow', 72), h('h3', { text: 'Every unlocked card is marked as known' }), h('p', { text: 'Turn off the filter to go through them again.' })), meta(list, rerender));
+    wrap.append(h('div', { class: 'empty' }, mascot('wow', 72), h('h2', { text: 'Every unlocked card is marked as known' }), h('p', { text: 'Turn off the filter to go through them again.' })), meta(list, rerender));
     return wrap;
   }
   if (cardIdx >= list.length) cardIdx = 0;
@@ -91,13 +91,13 @@ export function percentView({ startLesson }) {
     h('p', { class: 'page-sub', text: 'Sharpen the percentages behind fees, returns, NAV moves and tax. This doesn\'t affect your map progress.' }),
     h('div', { class: 'cheat', 'aria-label': 'Percent cheat sheet' }, sheet.map(([a, b]) => h('div', { class: 'cheat-row' }, h('b', { text: a }), h('span', { text: b })))),
     h('div', { class: 'tile' }, h('div', { class: 'chip', 'aria-hidden': 'true' }, '%'),
-      h('div', { class: 'body' }, h('h3', { text: 'Quick drill' }), h('p', { text: '10 fresh sums every time, each with "show me how".' })),
-      h('button', { class: 'btn line sm', onclick: () => startLesson({ mode: 'drill' }) }, 'Start')),
-    h('h2', { class: 'page-sub', style: 'margin-top:var(--s6);font-weight:900;color:var(--ink)', text: `Mini lessons · ${doneN} of ${PERCENT.levels.length} done` }),
+      h('div', { class: 'body' }, h('h2', { text: 'Quick drill' }), h('p', { text: '10 fresh sums every time, each with "show me how".' })),
+      h('button', { class: 'btn line sm', onclick: () => startLesson({ mode: 'drill' }) }, 'Start drill')),
+    h('h2', { class: 'section-label', text: `Mini lessons · ${doneN} of ${PERCENT.levels.length} done` }),
     PERCENT.levels.map((lv, i) => {
       const d = isDone(lv), res = S.resume?.lv === lv.id && S.resume.idea > 0;
       return h('div', { class: 'tile' }, h('div', { class: 'chip', 'aria-hidden': 'true' }, d ? icon('check') : String(i + 1)),
-        h('div', { class: 'body' }, h('h3', { text: lv.name }), h('p', { text: d ? 'Done. Redo it any time.' : res ? 'In progress.' : `${lv.ideas.length} idea${lv.ideas.length > 1 ? 's' : ''}, then quick checks.` })),
+        h('div', { class: 'body' }, h('h2', { text: lv.name }), h('p', { text: d ? 'Done. Redo it any time.' : res ? 'In progress.' : `${lv.ideas.length} idea${lv.ideas.length > 1 ? 's' : ''}, then quick checks.` })),
         h('button', { class: d ? 'btn quiet sm' : 'btn line sm', onclick: () => startLesson({ mode: 'level', level: lv }) }, d ? 'Redo' : res ? 'Continue' : 'Start'));
     }));
 }

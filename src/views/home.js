@@ -15,11 +15,11 @@ export function homeView({ startLesson }) {
   else root.append(h('section', { class: 'nextstop', 'data-line': 'basics' },
     h('div', { class: 'where' }, 'End of the line'),
     h('h1', { text: 'You finished every lesson' }),
-    h('p', { class: 'sub', text: 'Keep it fresh with Practice and Cards, or redo any station.' })));
+    h('p', { class: 'sub', text: 'Keep it fresh with Practice and Cards, or redo any lesson.' })));
 
   if (!S.seenIntro && !S.done.length) root.append(h('div', { class: 'intro-card' }, mascot('happy', 56),
     h('div', null, h('h2', { text: 'Learn money like a metro map' }),
-      h('p', { text: 'Every lesson is a station. Read a short idea, answer a couple of questions on it, ride on. Four lines: Fund basics, Tax, Portfolio and Stocks.' }))));
+      h('p', { text: 'Every lesson is a stop on the line. Read a short idea, answer a couple of questions on it, move on. Four lines: Fund basics, Tax, Portfolio and Stocks.' }))));
 
   SECTIONS.forEach((sec, si) => {
     const levels = sec.units.flatMap(u => u.levels);
@@ -27,7 +27,7 @@ export function homeView({ startLesson }) {
     const open = levels.some(unlocked);
     const secEl = h('section', { class: 'section' + (open ? '' : ' locked-sec'), 'data-line': sec.line, id: `line-${sec.id}` },
       h('div', { class: 'sec-head' }, h('div', { class: 'badge', 'aria-hidden': 'true', text: sec.badge }),
-        h('div', null, h('h2', { text: sec.title }), h('p', { text: `${doneN} of ${levels.length} stations · ${sec.blurb}` }))),
+        h('div', null, h('h2', { text: sec.title }), h('p', { text: `${doneN} of ${levels.length} lessons · ${sec.blurb}` }))),
       h('div', { class: 'sec-meter', role: 'progressbar', 'aria-label': `${sec.title} progress`, 'aria-valuenow': doneN, 'aria-valuemin': 0, 'aria-valuemax': levels.length },
         h('i', { style: `width:${(doneN / levels.length) * 100}%` })));
     const route = h('div', { class: 'route' });
@@ -39,7 +39,7 @@ export function homeView({ startLesson }) {
     root.append(secEl);
     if (si < SECTIONS.length - 1) root.append(h('div', { class: 'interchange' }, h('span', { class: 'xc', 'aria-hidden': 'true' }), `Change here for ${SECTIONS[si + 1].title}`));
   });
-  root.append(h('p', { class: 'foot-links' }, 'Fund Fluent is for learning, not investment advice. ', h('a', { href: '/privacy.html', text: 'Privacy' })));
+  root.append(h('p', { class: 'foot-links' }, 'Fund Fluent is for learning, not investment advice. ', h('button', { class: 'linkbtn', onclick: () => document.dispatchEvent(new CustomEvent('ff:privacy')) }, 'Privacy')));
   return root;
 }
 
@@ -69,7 +69,7 @@ function station(lv, isCurrent, startLesson) {
     class: 'node' + (done ? ' done' : '') + (isCurrent ? ' current' : ''),
     disabled: !open,
     'aria-expanded': String(openStation === lv.id),
-    'aria-label': `${lv.name}${done ? ', completed' : open ? '' : ', locked until you finish the station before it'}`,
+    'aria-label': `${lv.name}${done ? ', completed' : open ? '' : ', locked until you finish the lesson before it'}`,
     onclick: () => { openStation = openStation === lv.id ? null : lv.id; document.dispatchEvent(new CustomEvent('ff:render')); }
   });
   node.append(done ? icon('check') : open ? document.createTextNode(lv.unit.glyph) : icon('lock'));
@@ -80,7 +80,7 @@ function station(lv, isCurrent, startLesson) {
     const resuming = S.resume?.lv === lv.id && S.resume.idea > 0;
     wrap.append(h('div', { class: 'pop', role: 'dialog', 'aria-label': lv.name },
       h('h3', { text: lv.name }),
-      h('p', { text: done ? 'Done. Ride it again any time.' : resuming ? `You stopped at idea ${S.resume.idea + 1} of ${nIdeas}.` : `${nIdeas} short ideas, each followed by a quick check. About ${Math.max(3, Math.round(nQs * 0.6))} minutes.` }),
+      h('p', { text: done ? 'Done. Redo it any time to refresh.' : resuming ? `You stopped at idea ${S.resume.idea + 1} of ${nIdeas}.` : `${nIdeas} short ideas, each followed by a quick check. About ${Math.max(3, Math.round(nQs * 0.6))} minutes.` }),
       h('button', { class: 'btn wide', onclick: () => { openStation = null; startLesson({ mode: 'level', level: lv }); } }, done ? 'Redo lesson' : resuming ? 'Continue' : 'Start')));
   }
   return wrap;

@@ -40,7 +40,7 @@ b, strong { font-weight: 800; }
 .ring { --p: 0; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
   background: conic-gradient(var(--gold) calc(var(--p) * 1%), var(--sunk) 0); }
 .ring::after { content: ""; width: 22px; height: 22px; border-radius: 50%; background: var(--ground); }
-.iconbtn { width: 40px; height: 40px; border-radius: 12px; border: none; background: none; display: grid; place-items: center; color: var(--ink-2); cursor: pointer; }
+.iconbtn { width: 44px; height: 44px; border-radius: 12px; border: none; background: none; display: grid; place-items: center; color: var(--ink-2); cursor: pointer; }
 .iconbtn:hover { background: var(--sunk); }
 
 .tabs { position: fixed; inset: auto 0 0 0; z-index: 12; background: var(--surface); border-top: 2px solid var(--rule);
@@ -49,7 +49,7 @@ b, strong { font-weight: 800; }
 .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border-radius: 14px;
   border: 2px solid transparent; background: none; cursor: pointer; color: var(--ink-3); font-weight: 800; font-size: var(--t-xs); }
 .tab .ic { width: 26px; height: 26px; transition: transform var(--dur-med) var(--ease-spring); }
-.tab[aria-selected="true"] { color: var(--act); background: var(--act-tint); border-color: var(--act-tint); }
+.tab[aria-selected="true"] { color: var(--act-text); background: var(--act-tint); border-color: var(--act-tint); }
 .tab[aria-selected="true"] .ic { transform: translateY(-1px) scale(1.12); }
 
 /* ---------- buttons ---------- */
@@ -66,15 +66,15 @@ b, strong { font-weight: 800; }
 .btn.bad { --b: var(--bad); --bd: var(--bad-deep); --bt: #fff; }
 .btn.quiet { --b: var(--surface); --bd: var(--rule); --bt: var(--ink); border: 2px solid var(--rule); }
 .btn.wide { width: 100%; }
-.btn.sm { min-height: 40px; padding: 8px 14px; font-size: var(--t-sm); --depth: 3px; }
+.btn.sm { min-height: 44px; padding: 8px 14px; font-size: var(--t-sm); --depth: 3px; }
 .linkbtn { background: none; border: none; color: var(--act); font-weight: 800; cursor: pointer; padding: 6px; }
 
 /* ---------- next stop card (Transit) ---------- */
 .nextstop { margin-top: var(--s2); border-radius: var(--r-card); background: var(--line-fill); color: var(--on-line); padding: var(--s5); position: relative; overflow: hidden;
   box-shadow: 0 6px 0 var(--line-shadow); }
-.nextstop .where { font-weight: 800; font-size: var(--t-sm); opacity: .92; display: flex; align-items: center; gap: 8px; }
+.nextstop .where { font-weight: 800; font-size: var(--t-sm); display: flex; align-items: center; gap: 8px; }
 .nextstop h1 { font-family: var(--f-display); font-weight: 800; font-size: var(--t-2xl); line-height: 1.04; letter-spacing: -.02em; margin: 6px 0 4px; text-wrap: balance; }
-.nextstop .sub { font-weight: 700; opacity: .92; margin: 0 0 var(--s4); }
+.nextstop .sub { font-weight: 700; margin: 0 0 var(--s4); }
 .nextstop .btn { --b: #fff; --bd: rgba(0,0,0,.22); --bt: var(--line-ink); }
 .strip { position: relative; height: 26px; margin: var(--s2) 0 var(--s4); }
 .strip .rail { position: absolute; left: 0; right: 0; top: 11px; height: 4px; border-radius: 4px; background: currentColor; opacity: .35; }
@@ -122,7 +122,7 @@ b, strong { font-weight: 800; }
   box-shadow: 0 5px 0 var(--line-shadow); animation: popin var(--dur-med) var(--ease-spring); }
 .pop::before { content: ""; position: absolute; top: -8px; left: 27px; width: 16px; height: 16px; background: var(--line-fill); transform: rotate(45deg); border-radius: 3px; }
 .pop h3 { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: var(--t-lg); line-height: 1.15; }
-.pop p { margin: 4px 0 var(--s3); font-weight: 700; opacity: .92; font-size: var(--t-sm); }
+.pop p { margin: 4px 0 var(--s3); font-weight: 700; font-size: var(--t-sm); }
 .pop .btn { --b: #fff; --bd: rgba(0,0,0,.22); --bt: var(--line-ink); }
 .pop .row { display: flex; gap: var(--s2); }
 .pop .row .btn { flex: 1; }
@@ -136,7 +136,7 @@ b, strong { font-weight: 800; }
 .page-sub { color: var(--ink-2); margin: 0 0 var(--s5); font-weight: 600; max-width: 60ch; }
 .tile { display: flex; gap: var(--s4); align-items: center; padding: var(--s4); border-radius: var(--r-card); background: var(--surface); border: 2px solid var(--rule); border-bottom-width: 5px; margin-bottom: var(--s3); }
 .tile .chip { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: var(--line-tint, var(--act-tint)); color: var(--line-text, var(--act)); flex: none; font-family: var(--f-display); font-weight: 800; }
-.tile h3 { margin: 0; font-size: 1.05rem; }
+.tile h2 { margin: 0; font-size: 1.05rem; }
 .tile p { margin: 2px 0 0; color: var(--ink-2); font-size: var(--t-sm); font-weight: 600; }
 .tile .body { min-width: 0; flex: 1; }
 .tile .btn { flex: none; }
@@ -173,7 +173,7 @@ b, strong { font-weight: 800; }
 .chk { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
 .chk input { width: 20px; height: 20px; accent-color: var(--act); }
 .empty { text-align: center; padding: var(--s8) var(--s4); }
-.empty h3 { font-family: var(--f-display); font-size: var(--t-lg); margin: var(--s3) 0 4px; }
+.empty h2 { font-family: var(--f-display); font-size: var(--t-lg); margin: var(--s3) 0 4px; }
 .empty p { color: var(--ink-2); margin: 0 auto var(--s4); max-width: 36ch; font-weight: 600; }
 
 /* ---------- lesson ---------- */
@@ -237,7 +237,7 @@ b, strong { font-weight: 800; }
 @keyframes pop { 50% { transform: scale(1.04); } }
 @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
 
-.numbox { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 2px solid var(--rule); border-bottom-width: 5px; border-radius: var(--r-btn); padding: 6px var(--s4); }
+.numbox { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 2px solid var(--rule-strong); border-bottom-width: 5px; border-radius: var(--r-btn); padding: 6px var(--s4); }
 .numbox:focus-within { border-color: var(--act); }
 .numbox span { font-weight: 900; color: var(--ink-2); font-size: 1.3rem; }
 .numbox input { flex: 1; min-width: 0; border: none; background: none; font-family: var(--f-display); font-weight: 800; font-size: 2rem; color: var(--ink); padding: 8px 0; font-variant-numeric: tabular-nums; }
@@ -327,9 +327,9 @@ b, strong { font-weight: 800; }
 .stars { display: flex; gap: 8px; justify-content: center; margin: var(--s3) 0 var(--s4); }
 .stars button { border: none; background: none; cursor: pointer; color: var(--rule); padding: 2px; transition: transform var(--dur-fast) var(--ease-spring), color var(--dur-fast); }
 .stars button .ic { width: 44px; height: 44px; }
-.stars button.on { color: var(--gold); transform: scale(1.08); }
+.stars button[aria-pressed="true"], .stars button.on { color: var(--gold); transform: scale(1.08); }
 .field label { display: block; font-weight: 800; margin-bottom: 6px; }
-.field textarea { width: 100%; min-height: 96px; resize: vertical; border-radius: 14px; border: 2px solid var(--rule); background: var(--ground); color: var(--ink); padding: var(--s3); font: inherit; font-weight: 600; }
+.field textarea { width: 100%; min-height: 96px; resize: vertical; border-radius: 14px; border: 2px solid var(--rule-strong); background: var(--ground); color: var(--ink); padding: var(--s3); font: inherit; font-weight: 600; }
 .field textarea:focus { outline: none; border-color: var(--act); }
 .field small { color: var(--ink-2); font-weight: 600; display: block; margin-top: 4px; }
 .sheet .actions { display: flex; gap: var(--s3); margin-top: var(--s4); }
@@ -358,3 +358,10 @@ b, strong { font-weight: 800; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+.tile h2 { margin: 0; font-size: 1.05rem; }
+.section-label { margin: var(--s6) 0 var(--s3); font-size: var(--t-sm); font-weight: 900; color: var(--ink); }
+.l-body:focus-visible { outline-offset: -3px; }
+.form-error { color: var(--bad-text); font-weight: 800; margin: var(--s3) 0 0; }
+.privacy-list h3 { margin: var(--s4) 0 2px; font-size: 1rem; }
+.privacy-list p { margin: 0; color: var(--ink-2); font-weight: 600; }

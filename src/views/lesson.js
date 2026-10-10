@@ -36,6 +36,7 @@ export function startLesson(cfg) {
   L = { cfg, line, resumedFrom, queue: steps, total: steps.length, cleared: 0, qCount: steps.filter(s => s.kind === 'q').length,
         xp: 0, firstRight: 0, combo: 0, best: 0, retries: {}, start: Date.now(), cur: null, phase: 'teach', stops: cfg.level ? cfg.level.ideas.length : 0 };
   const el = host(); el.hidden = false; el.setAttribute('data-line', line);
+  setInert(true); L.opener = document.activeElement;
   document.body.style.overflow = 'hidden';
   S.seenIntro = true; save();
   track('lesson_started', { mode: cfg.mode, level: cfg.level?.id, section: cfg.level?.section.id, resumed: resumedFrom > 0 });
@@ -44,10 +45,12 @@ export function startLesson(cfg) {
 
 function close(abandoned) {
   if (abandoned && L) track('lesson_left', { mode: L.cfg.mode, level: L.cfg.level?.id, progress: Math.round((L.cleared / L.total) * 100) });
-  L = null; const el = host(); el.hidden = true; el.replaceChildren();
+  const opener = L?.opener; L = null; const el = host(); el.hidden = true; el.replaceChildren(); setInert(false);
   document.body.style.overflow = '';
   hooks.onClose?.();
+  if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
 }
+function setInert(on) { for (const id of ['app', 'tabs']) { const n = document.getElementById(id); if (n) n.inert = on; } }
 
 function next() {
   if (!L.queue.length) return finish();
@@ -79,7 +82,7 @@ function head() {
 }
 
 function frame(bodyKids, footKids, footClass = '') {
-  const body = h('div', { class: 'l-body' }, h('div', { class: 'l-inner' }, bodyKids));
+  const body = h('div', { class: 'l-body', tabindex: '0', 'aria-label': 'Lesson content' }, h('div', { class: 'l-inner' }, bodyKids));
   const foot = h('div', { class: 'l-foot ' + footClass, id: 'foot' }, h('div', { class: 'l-foot-inner' }, footKids));
   host().replaceChildren(head(), body, foot);
   body.scrollTop = 0;
@@ -299,11 +302,11 @@ function finish() {
     h('p', { text: sub + (perfect ? ' +20 bonus XP for no mistakes.' : '') }),
     h('div', { class: 'stats3' },
       h('div', null, xpEl, h('span', { text: 'XP earned' })),
-      h('div', null, h('b', { text: acc + '%' }), h('span', { text: 'First try' })),
+      h('div', null, h('b', { text: acc + '%' }), h('span', { text: 'Right first time' })),
       h('div', null, h('b', { text: (secs >= 60 ? Math.floor(secs / 60) + 'm ' : '') + (secs % 60) + 's' }), h('span', { text: 'Time' }))),
     lv ? h('div', { class: 'learned' }, h('h4', { text: 'You learned' }), h('ul', null, lv.ideas.map(i => h('li', null, icon('check'), i.title)))) : null);
   const done = h('button', { class: 'btn line wide', onclick: () => { const showReview = S.lessons >= 3 && !S.reviewed && Date.now() - S.reviewSnoozedAt > 3 * 864e5; close(false); if (showReview) hooks.askReview?.(); } }, 'Continue');
-  host().replaceChildren(h('div', { class: 'l-body' }, h('div', { class: 'l-inner' }, body)), h('div', { class: 'l-foot' }, h('div', { class: 'l-foot-inner' }, done)));
+  host().replaceChildren(h('div', { class: 'l-body', tabindex: '0', 'aria-label': 'Lesson summary' }, h('div', { class: 'l-inner' }, body)), h('div', { class: 'l-foot' }, h('div', { class: 'l-foot-inner' }, done)));
   L.phase = 'done';
   celebrate();
   countUp(xpEl, L.xp);
@@ -316,11 +319,11 @@ function askLeave() {
   if (!foot || L.phase === 'done') return close(false);
   const prev = [...foot.firstChild.childNodes], prevClass = foot.className;
   foot.className = 'l-foot';
-  const msg = L.cfg.mode === 'level' ? `Your place is saved. You\'ll come back to idea ${(S.resume?.idea ?? 0) + 1}. XP from this session isn\'t kept.` : 'XP from this session isn\'t kept. Missed questions stay in Practice.';
+  const msg = L.cfg.mode === 'level' ? `Your place is saved, so you\'ll pick up at idea ${(S.resume?.idea ?? 0) + 1}. XP from this session won\'t count.` : 'XP from this session won\'t count. Questions you missed stay in Practice.';
   foot.firstChild.replaceChildren(h('div', { class: 'fb-title', text: 'Leave this lesson?' }), h('div', { class: 'fb-why', text: msg }),
     h('div', { class: 'card-actions' },
-      h('button', { class: 'btn quiet', onclick: () => { foot.className = prevClass; foot.firstChild.replaceChildren(...prev); } }, 'Keep going'),
-      h('button', { class: 'btn bad', onclick: () => close(true) }, 'Leave')));
+      h('button', { class: 'btn quiet', onclick: () => { foot.className = prevClass; foot.firstChild.replaceChildren(...prev); } }, 'Keep learning'),
+      h('button', { class: 'btn bad', onclick: () => close(true) }, 'Leave lesson')));
 }
 
 document.addEventListener('keydown', e => {

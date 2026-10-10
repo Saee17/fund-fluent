@@ -9,6 +9,8 @@ import { practiceView, cardsView, percentView } from './views/tabs.js';
 import { initLesson, startLesson } from './views/lesson.js';
 import { initAnalytics, track, setAnalyticsOff } from './analytics.js';
 
+const PROTOTYPE = import.meta.env.VITE_PROTOTYPE === '1';
+
 const TABS = [
   { id: 'learn', label: 'Learn', icon: 'map' },
   { id: 'practice', label: 'Practice', icon: 'dumbbell' },
@@ -32,7 +34,7 @@ const top = h('header', { class: 'topbar' },
 const view = h('main', { id: 'view' });
 app.append(top, view);
 
-const nav = h('nav', { class: 'tabs', 'aria-label': 'Sections' }, h('div', { class: 'tabs-inner', role: 'tablist' },
+const nav = h('nav', { class: 'tabs', id: 'tabs', 'aria-label': 'Sections' }, h('div', { class: 'tabs-inner', role: 'tablist' },
   TABS.map(t => h('button', { class: 'tab', role: 'tab', id: `tab-${t.id}`, 'aria-selected': String(t.id === tab), onclick: () => go(t.id) }, icon(t.icon), t.label))));
 document.body.append(nav);
 
@@ -66,7 +68,8 @@ function sheet(children, label) {
   const prev = document.activeElement;
   const s = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': label }, children);
   const scrim = h('div', { class: 'scrim', onclick: e => { if (e.target === scrim) closeSheet(); } }, s);
-  function closeSheet() { scrim.remove(); document.removeEventListener('keydown', esc); prev?.focus?.(); }
+  const bg = ['app', 'tabs'].map(id => document.getElementById(id)); bg.forEach(n => { if (n) n.inert = true; });
+  function closeSheet() { scrim.remove(); bg.forEach(n => { if (n) n.inert = false; }); document.removeEventListener('keydown', esc); prev?.focus?.(); }
   function esc(e) { if (e.key === 'Escape') closeSheet(); }
   document.addEventListener('keydown', esc);
   document.body.append(scrim);
@@ -92,9 +95,9 @@ function openSettings() {
   const tog = h('button', { class: 'toggle', role: 'switch', 'aria-checked': String(!S.analyticsOff), 'aria-label': 'Share anonymous usage data',
     onclick: e => { const on = e.currentTarget.getAttribute('aria-checked') !== 'true'; e.currentTarget.setAttribute('aria-checked', String(on)); setAnalyticsOff(!on); save(); } });
   const resetBox = h('div');
-  const resetBtn = () => h('button', { class: 'btn quiet wide', style: 'margin-top:var(--s4)', onclick: () => resetBox.replaceChildren(h('div', { class: 'confirm' }, h('span', { text: 'Erase all progress, XP and streaks on this device?' }),
-    h('button', { class: 'btn bad sm', onclick: () => { resetAll(); close(); render(); toast('Progress erased'); } }, 'Erase'),
-    h('button', { class: 'btn quiet sm', onclick: () => resetBox.replaceChildren(resetBtn()) }, 'Keep'))) }, 'Erase my progress');
+  const resetBtn = () => h('button', { class: 'btn quiet wide', style: 'margin-top:var(--s4)', onclick: () => resetBox.replaceChildren(h('div', { class: 'confirm' }, h('span', { text: 'Erase all lessons, XP and streaks on this device? This can\'t be undone.' }),
+    h('button', { class: 'btn bad sm', onclick: () => { resetAll(); close(); render(); toast('Progress erased'); } }, 'Erase progress'),
+    h('button', { class: 'btn quiet sm', onclick: () => resetBox.replaceChildren(resetBtn()) }, 'Keep progress'))) }, 'Erase my progress');
   resetBox.append(resetBtn());
   close = sheet([
     h('h2', { text: 'Settings' }),
@@ -102,26 +105,44 @@ function openSettings() {
     h('div', { class: 'setrow' }, h('div', null, 'Theme'), themeSeg),
     h('div', { class: 'setrow' }, h('div', null, 'Share anonymous usage', h('small', { text: 'Which lessons people finish or get stuck on. No names, no emails.' })), tog),
     h('div', { class: 'setrow' }, h('div', null, 'Rate Fund Fluent', h('small', { text: 'Tell us what to fix or add.' })), h('button', { class: 'btn sm', onclick: () => { close(); openReview(true); } }, 'Rate')),
-    h('div', { class: 'setrow' }, h('div', null, 'Privacy'), h('a', { href: '/privacy.html', class: 'linkbtn', text: 'Read' })),
+    h('div', { class: 'setrow' }, h('div', null, 'Privacy', h('small', { text: 'What is saved and what is shared.' })), h('button', { class: 'btn quiet sm', onclick: () => { close(); openPrivacy(); } }, 'Read privacy')),
     resetBox
   ], 'Settings');
 }
 
+function openPrivacy() {
+  sheet([
+    h('h2', { text: 'Privacy' }),
+    h('p', { text: 'There is no sign-up. Fund Fluent never asks for your name, email or phone number.' }),
+    h('div', { class: 'privacy-list' },
+      h('h3', { text: 'Your progress' }), h('p', { text: 'Lessons, XP, streaks and mistakes are saved only in this browser. Erase them any time from Settings.' }),
+      h('h3', { text: 'Anonymous usage' }), h('p', { text: 'If switched on, we count things like "lesson finished" or "question answered wrong" with the lesson id, using PostHog. No cookies, no screen recording, nothing you type. Turn it off in Settings.' }),
+      h('h3', { text: 'Reviews' }), h('p', { text: 'Your star rating and optional comment are stored by our host, Netlify. Please leave personal details out of comments.' }),
+      h('h3', { text: 'Not advice' }), h('p', { text: 'Fund Fluent teaches general concepts. It is not investment, tax or legal advice.' })),
+    h('div', { class: 'actions' }, h('button', { class: 'btn quiet', onclick: () => document.querySelector('.scrim')?.click() }, 'Close'))
+  ], 'Privacy');
+}
+document.addEventListener('ff:privacy', openPrivacy);
+
 function openReview(fromSettings = false) {
   let rating = 0, close;
-  const stars = h('div', { class: 'stars', role: 'radiogroup', 'aria-label': 'Your rating' });
+  const stars = h('div', { class: 'stars', role: 'group', 'aria-label': 'Your rating, 1 to 5 stars' });
   const send = h('button', { class: 'btn good', disabled: true }, 'Send review');
-  const paint = () => stars.querySelectorAll('button').forEach((b, i) => { b.classList.toggle('on', i < rating); b.setAttribute('aria-checked', String(i + 1 === rating)); });
-  for (let i = 1; i <= 5; i++) stars.append(h('button', { role: 'radio', 'aria-label': `${i} star${i > 1 ? 's' : ''}`, 'aria-checked': 'false', onclick: () => { rating = i; paint(); send.disabled = false; } }, icon('star')));
+  const paint = () => stars.querySelectorAll('button').forEach((b, i) => { b.classList.toggle('on', i < rating); b.setAttribute('aria-pressed', String(i + 1 === rating)); });
+  for (let i = 1; i <= 5; i++) stars.append(h('button', { 'aria-label': `${i} star${i > 1 ? 's' : ''}`, 'aria-pressed': 'false', onclick: () => { rating = i; paint(); send.disabled = false; } }, icon('star')));
   const ta = h('textarea', { id: 'review-comment', maxlength: '500', placeholder: 'What did you like? What was confusing?' });
+  const err = h('p', { class: 'form-error', role: 'alert', hidden: true });
   send.onclick = async () => {
-    send.disabled = true; send.textContent = 'Sending…';
-    const body = new URLSearchParams({ 'form-name': 'review', rating: String(rating), comment: ta.value.trim().slice(0, 500), 'bot-field': '' });
-    let ok = false;
-    try { const r = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body }); ok = r.ok; } catch { ok = false; }
+    send.disabled = true; send.textContent = 'Sending…'; err.hidden = true;
+    let ok = PROTOTYPE;
+    if (!PROTOTYPE) {
+      const body = new URLSearchParams({ 'form-name': 'review', rating: String(rating), comment: ta.value.trim().slice(0, 500), 'bot-field': '' });
+      try { const r = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body }); ok = r.ok; } catch { ok = false; }
+    }
+    if (!ok) { err.textContent = 'Couldn\'t send your review. Check your internet connection and try again.'; err.hidden = false; send.disabled = false; send.textContent = 'Try again'; return; }
     track('review_submitted', { rating, has_comment: !!ta.value.trim() });
     S.reviewed = true; save(); close();
-    toast(ok ? 'Thanks! Review sent.' : 'Thanks! Your rating was saved; the comment could not be sent right now.');
+    toast(PROTOTYPE ? 'Thanks! (This preview doesn\'t send reviews anywhere.)' : 'Thanks! Review sent.');
   };
   close = sheet([
     h('div', { style: 'text-align:center' }, mascot('happy', 64)),
@@ -129,6 +150,7 @@ function openReview(fromSettings = false) {
     h('p', { style: 'text-align:center', text: 'Your rating helps decide what to improve next.' }),
     stars,
     h('div', { class: 'field' }, h('label', { for: 'review-comment', text: 'Anything to add? (optional)' }), ta, h('small', { text: 'Please don\'t include your name, phone number or other personal details.' })),
+    err,
     h('div', { class: 'actions' }, h('button', { class: 'btn quiet', onclick: () => { if (!fromSettings) { S.reviewSnoozedAt = Date.now(); save(); } close(); } }, fromSettings ? 'Cancel' : 'Not now'), send)
   ], 'Rate Fund Fluent');
 }
