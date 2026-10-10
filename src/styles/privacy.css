@@ -1,0 +1,4 @@
+.privacy { padding-block: var(--s6) var(--s10); max-width: 680px; }
+.privacy h2 { font-family: var(--f-display); font-size: var(--t-lg); margin: var(--s6) 0 var(--s2); }
+.privacy p { max-width: 65ch; font-weight: 600; line-height: 1.65; }
+.privacy a { color: var(--act); font-weight: 800; }

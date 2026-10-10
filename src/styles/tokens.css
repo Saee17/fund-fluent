@@ -1,0 +1,86 @@
+/* Fund Fluent design tokens. See DESIGN_SYSTEM.md for how each one is used.
+   Concept: the course is a metro map. Every section is a coloured line,
+   every lesson a station. Line colours carry meaning; everything else stays quiet. */
+:root {
+  /* Neutrals: a cool, slightly indigo-leaning ground so the line colours sing */
+  --ground: #F2F3F8;
+  --surface: #FFFFFF;
+  --sunk: #E6E8F1;
+  --rule: #D5D8E6;
+  --ink: #1D1B3F;
+  --ink-2: #555878;
+  --ink-3: #65688A;
+
+  /* Brand action colour (buttons, focus, links) */
+  --act: #4B3FE4; --act-deep: #3127B8; --act-tint: #E8E6FF; --on-act: #FFFFFF;
+
+  /* Metro lines, one per section.
+     line   = bright track and meters      fill = surfaces that carry text
+     on     = text on fill                 shadow = 3D press edge under fill
+     text   = line-coloured text on ground tint = soft background */
+  --basics: #13B37A; --basics-fill: #0A8556; --basics-on: #FFFFFF; --basics-shadow: #06603E; --basics-text: #0A7A4F; --basics-tint: #DDF6EC;
+  --tax:    #FF5B57; --tax-fill:    #D0312D; --tax-on:    #FFFFFF; --tax-shadow:    #9C2220; --tax-text:    #C02E2A; --tax-tint:    #FFE5E4;
+  --plan:   #2E6BFF; --plan-fill:   #2556E6; --plan-on:   #FFFFFF; --plan-shadow:   #183DAA; --plan-text:   #1F4FD6; --plan-tint:   #E2EBFF;
+  --stocks: #FF9A1F; --stocks-fill: #FF9A1F; --stocks-on: #2B1A00; --stocks-shadow: #C56F05; --stocks-text: #A55A00; --stocks-tint: #FFF0DB;
+  /* ink = line-coloured text on a white button, same in both themes */
+  --basics-ink: #0A7A4F; --tax-ink: #C02E2A; --plan-ink: #1F4FD6; --stocks-ink: #8F4E00; --pct-ink: #7A35D0;
+  --pct:    #A24BF2; --pct-fill:    #8A3FE0; --pct-on:    #FFFFFF; --pct-shadow:    #6427AD; --pct-text:    #7A35D0; --pct-tint:    #F2E6FF;
+
+  /* Rewards and feedback */
+  --gold: #FFC531; --gold-deep: #D99A00; --gold-tint: #FFF4D1; --on-gold: #3B2A00; --gold-text: #8A6100;
+  --good: #14864A; --good-deep: #0D6638; --good-tint: #DDF5E6; --good-text: #0D6E3C;
+  --bad: #C7332D;  --bad-deep: #952420;  --bad-tint: #FDE4E2;  --bad-text: #A82A25;
+  --flame: #E8590C; --flame-tint: #FFE8D6;
+
+  /* Type */
+  --f-display: "Bricolage Grotesque Variable", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Nunito Variable", "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --t-xs: 0.8125rem; --t-sm: 0.9375rem; --t-md: 1.0625rem; --t-lg: 1.375rem; --t-xl: 1.75rem; --t-2xl: 2.25rem;
+
+  /* Space (4-based) */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px; --s8: 32px; --s10: 40px;
+
+  /* Radius: chunky for things you press, softer for reading surfaces */
+  --r-pill: 999px; --r-btn: 16px; --r-card: 20px; --r-sheet: 24px;
+
+  /* Press depth: the Duolingo-style 3D bottom edge */
+  --depth: 4px;
+
+  /* Motion */
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --dur-fast: 120ms; --dur-med: 280ms; --dur-slow: 520ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #12122A; --surface: #1C1C3B; --sunk: #272852; --rule: #34366A;
+    --ink: #EEEEFB; --ink-2: #B0B2D3; --ink-3: #9295BC;
+    --act: #8C83FF; --act-deep: #5D52E6; --act-tint: #2C2A66; --on-act: #0F0E2A;
+    --basics: #2CD497; --basics-text: #2CD497; --basics-tint: #163D33;
+    --tax: #FF7B77;    --tax-text: #FF7B77;    --tax-tint: #43222A;
+    --plan: #6E97FF;   --plan-text: #8DADFF;   --plan-tint: #1E2C5C;
+    --stocks: #FFB04D; --stocks-text: #FFB04D; --stocks-tint: #42321C;
+    --pct: #C084FF;    --pct-text: #C99BFF;    --pct-tint: #36245A;
+    --gold-tint: #3D3418; --gold-text: #FFCF4D;
+    --good: #24A15E; --good-deep: #17733F; --good-tint: #163828; --good-text: #45CF83;
+    --bad: #D24F48;  --bad-deep: #9C2E29;  --bad-tint: #42202A;  --bad-text: #FF8A82;
+    --flame: #FF9A5C; --flame-tint: #3D2618;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #12122A; --surface: #1C1C3B; --sunk: #272852; --rule: #34366A;
+  --ink: #EEEEFB; --ink-2: #B0B2D3; --ink-3: #9295BC;
+  --act: #8C83FF; --act-deep: #5D52E6; --act-tint: #2C2A66; --on-act: #0F0E2A;
+  --basics: #2CD497; --basics-text: #2CD497; --basics-tint: #163D33;
+  --tax: #FF7B77;    --tax-text: #FF7B77;    --tax-tint: #43222A;
+  --plan: #6E97FF;   --plan-text: #8DADFF;   --plan-tint: #1E2C5C;
+  --stocks: #FFB04D; --stocks-text: #FFB04D; --stocks-tint: #42321C;
+  --pct: #C084FF;    --pct-text: #C99BFF;    --pct-tint: #36245A;
+  --gold-tint: #3D3418; --gold-text: #FFCF4D;
+  --good: #24A15E; --good-deep: #17733F; --good-tint: #163828; --good-text: #45CF83;
+  --bad: #D24F48;  --bad-deep: #9C2E29;  --bad-tint: #42202A;  --bad-text: #FF8A82;
+  --flame: #FF9A5C; --flame-tint: #3D2618;
+  color-scheme: dark;
+}

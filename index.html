@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Fund Fluent</title>
+  <meta name="description" content="Learn mutual funds, tax and the Indian stock market in short, playful lessons. Teach first, then quick checks.">
+  <meta name="theme-color" content="#4B3FE4">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="Fund Fluent">
+  <meta property="og:description" content="Learn mutual funds, tax and stocks like a metro map: one short lesson at a time.">
+</head>
+<body>
+  <!-- Netlify Forms needs this static copy of the review form to detect it at deploy time. The app posts to it with fetch. -->
+  <form name="review" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input name="bot-field">
+    <input name="rating">
+    <textarea name="comment"></textarea>
+  </form>
+  <noscript><p>Fund Fluent needs JavaScript to run the lessons.</p></noscript>
+  <div class="app" id="app"></div>
+  <div class="lesson" id="lesson" hidden></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
